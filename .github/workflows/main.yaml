@@ -13,7 +13,7 @@ jobs:
     steps:
       - name: create new repo      
         run: |
-          echo ${{ secrets.LOGIN_TOKEN }} > secret.file &&
+          echo ${{ secrets.GH_TOKEN }} > secret.file &&
           gh auth login --with-token < secret.file &&
           gh auth status &&
           gh repo create ${{ github.event.inputs.repoName }} --private --template hlxsites/aem-boilerplate-commerce 
