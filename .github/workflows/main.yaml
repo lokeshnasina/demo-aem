@@ -6,6 +6,10 @@ on:
         description: 'Repo name'
         required: true
         default: 'demo_project'
+      gdocPath:
+        description: 'Google Doc Path'
+        required: true
+        default: 'https://drive.google.com/drive/folders/1MGzOt7ubUh3gu7zhZIPb7R7dyRzG371j'  
 
 jobs:
   createRepoWithNameParam:
@@ -39,7 +43,7 @@ jobs:
           DEPLOY_KEY_ID=$(gh api --silent repos/lokeshnasina/${{ github.event.inputs.repoName }}/keys | jq -r '.[] | select(.title == "my") | .id') &&
           # Update the deploy key permissions to read/write
           gh api -X PATCH /repos/lokeshnasina/${{ github.event.inputs.repoName }}/keys/$DEPLOY_KEY_ID --field read_only=false &&
-          sed -i '2s#.*#  / : [Google Drive Folder](https://drive.google.com/drive/folders/1MGzOt7ubUh3gu7zhZIPb7R7dyRzG371j)#g' fstab.yaml &&
+          sed -i '2s#.*#  / : ${{ github.event.inputs.gdocPath }}#g' fstab.yaml && 
           cat fstab.yaml 
           git config --global user.email "lokesh.nasina@diva-e.com"
           git config --global user.name "lokeshnasina"
