@@ -26,6 +26,8 @@ jobs:
           gh auth status &&
           gh repo clone lokeshnasina/${{ github.event.inputs.repoName }} &&
           cd ${{ github.event.inputs.repoName }}
+          eval "$(ssh-agent -s)"
+          ssh-add ~/.ssh/github_rsa
           git remote set-url origin git@github.com:lokeshnasina/${{ github.event.inputs.repoName }}.git
           sed -i '2s#.*#  / : ${{ github.event.inputs.gdocPath }}#g' fstab.yaml && 
           cat fstab.yaml 
