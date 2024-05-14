@@ -15,6 +15,7 @@ jobs:
         run: sleep 10s 
       - name: clone new repo, change gDocPath and push
         run: |
+          mkdir -p ~/.ssh  
           ssh-keygen -t ed25519 -C "my description" -N "" -f .ssh/github_rsa
           echo "Host github.com" > ~/.ssh/config
           echo "  IdentityFile ~/.ssh/github_rsa" >> ~/.ssh/config
