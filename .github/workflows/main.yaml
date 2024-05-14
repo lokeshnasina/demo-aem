@@ -26,10 +26,10 @@ jobs:
           gh auth status &&
           gh repo clone lokeshnasina/${{ github.event.inputs.repoName }} &&
           cd ${{ github.event.inputs.repoName }}
+          git remote set-url origin git@github.com:lokeshnasina/${{ github.event.inputs.repoName }}.git
           sed -i '2s#.*#  / : ${{ github.event.inputs.gdocPath }}#g' fstab.yaml && 
           cat fstab.yaml 
           git config --global user.email "lokesh.nasina@diva-e.com"
           git config --global user.name "lokeshnasina"
-          git remote set-url origin git@github.com:lokeshnasina/${{ github.event.inputs.repoName }}.git
           git commit -am "use fstab!" 
           git push         
