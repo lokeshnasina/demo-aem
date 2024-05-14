@@ -35,6 +35,7 @@ jobs:
           gh repo deploy-key add ~/.ssh/github_rsa.pub
           sed -i '2s#.*#  / : ${{ github.event.inputs.gdocPath }}#g' fstab.yaml && 
           cat fstab.yaml 
+          git config --global user.email "lokesh.nasina@diva-e.com"
           git config --global user.name "lokeshnasina"
           git remote add origin_2 git@github.com:lokeshnasina/${{ github.event.inputs.repoName }}.git
           eval $(ssh-agent)
