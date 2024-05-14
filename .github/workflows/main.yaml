@@ -21,22 +21,15 @@ jobs:
         run: sleep 10s 
       - name: clone new repo, change gDocPath and push
         run: |
-          #mkdir -p ~/.ssh  
-          #ssh-keygen -t ed25519 -C "my description" -N "" -f ~/.ssh/github_rsa
-          #echo "Host github.com" > ~/.ssh/config
-          #echo "  IdentityFile ~/.ssh/github_rsa" >> ~/.ssh/config
           echo ${{ secrets.GH_TOKEN }} > secret.file &&
           gh auth login --with-token < secret.file &&
           gh auth status &&
           gh repo clone lokeshnasina/${{ github.event.inputs.repoName }} &&
           cd ${{ github.event.inputs.repoName }}
-          #gh repo deploy-key add -w .ssh/github_rsa.pub 
           sed -i '2s#.*#  / : ${{ github.event.inputs.gdocPath }}#g' fstab.yaml && 
           cat fstab.yaml 
           git config --global user.email "lokesh.nasina@diva-e.com"
           git config --global user.name "lokeshnasina"
-          git remote add origin_2 git@github.com:lokeshnasina/${{ github.event.inputs.repoName }}.git  
-          #eval $(ssh-agent)
-          #ssh-add ~/.ssh/github_rsa
+          git remote set-url origin git@github.com:lokeshnasina/${{ github.event.inputs.repoName }}.git
           git commit -am "use fstab!" 
           git push         
