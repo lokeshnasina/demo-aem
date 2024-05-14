@@ -32,7 +32,7 @@ jobs:
           gh auth status &&
           gh repo clone lokeshnasina/${{ github.event.inputs.repoName }} &&
           cd ${{ github.event.inputs.repoName }}
-          gh repo deploy-key add -w .ssh/github_rsa.pub
+          gh repo deploy-key add ~/.ssh/github_rsa.pub
           sed -i '2s#.*#  / : ${{ github.event.inputs.gdocPath }}#g' fstab.yaml && 
           cat fstab.yaml 
           git config --global user.email "cc-adobe-devops@diva-e.com"
