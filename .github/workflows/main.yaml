@@ -11,6 +11,12 @@ jobs:
   createRepoWithNameParam:
     runs-on: ubuntu-latest
     steps:
+      - name: create new repo      
+        run: |
+          echo ${{ secrets.LOGIN_TOKEN }} > secret.file &&
+          gh auth login --with-token < secret.file &&
+          gh auth status &&
+          gh repo create ${{ github.event.inputs.repoName }} --private --template hlxsites/aem-boilerplate-commerce 
       - name: Sleep for 10s to wait for the repo to be created
         run: sleep 10s 
       - name: clone new repo, change gDocPath and push
