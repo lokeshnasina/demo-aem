@@ -32,8 +32,13 @@ jobs:
           gh auth login --with-token < secret.file &&
           gh auth status &&
           gh repo clone lokeshnasina/${{ github.event.inputs.repoName }} &&
-          cd ${{ github.event.inputs.repoName }}
-          gh repo deploy-key add -w .ssh/github_rsa.pub 
+          cd ${{ github.event.inputs.repoName }} &&
+          # Add deploy key
+          gh repo deploy-key add ~/.ssh/github_rsa.pub --title "my" --read-only &&
+          # Fetch the deploy key ID
+          DEPLOY_KEY_ID=$(gh api --silent repos/lokeshnasina/${{ github.event.inputs.repoName }}/keys | jq -r '.[] | select(.title == "my") | .id') &&
+          # Update the deploy key permissions to read/write
+          gh api -X PATCH /repos/lokeshnasina/${{ github.event.inputs.repoName }}/keys/$DEPLOY_KEY_ID --field read_only=false &&
           sed -i '2s#.*#  / : [Google Drive Folder](https://drive.google.com/drive/folders/1MGzOt7ubUh3gu7zhZIPb7R7dyRzG371j)#g' fstab.yaml &&
           cat fstab.yaml 
           git config --global user.email "lokesh.nasina@diva-e.com"
