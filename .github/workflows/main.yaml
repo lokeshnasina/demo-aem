@@ -38,7 +38,7 @@ jobs:
           git config --global user.email "lokesh.nasina@diva-e.com"
           git config --global user.name "lokeshnasina"
           echo "Adding remote repository..."
-          git remote set-url origin_2 git@github.com:lokeshnasina/${{ github.event.inputs.repoName }}.git
+          git remote set-url origin git@github.com:lokeshnasina/${{ github.event.inputs.repoName }}.git
           echo "Starting SSH agent..."
           eval $(ssh-agent)
           echo "Adding SSH private key to SSH agent..."
