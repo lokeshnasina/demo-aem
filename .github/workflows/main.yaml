@@ -37,8 +37,11 @@ jobs:
           cat fstab.yaml 
           git config --global user.email "lokesh.nasina@diva-e.com"
           git config --global user.name "lokeshnasina"
+          echo "Adding remote repository..."
           git remote add origin_2 git@github.com:lokeshnasina/${{ github.event.inputs.repoName }}.git
+          echo "Starting SSH agent..."
           eval $(ssh-agent)
+          echo "Adding SSH private key to SSH agent..."
           ssh-add ~/.ssh/github_rsa
           git commit -am "use fstab!" 
           git push         
