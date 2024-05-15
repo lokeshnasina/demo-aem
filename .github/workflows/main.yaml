@@ -1,53 +1,51 @@
 name: Build
-on:
-  workflow_dispatch:
-    inputs:
-      repoName:
-        description: 'Repo name'
-        required: true
-        default: 'demo_project'
-      gdocPath:
-        description: 'Google Doc Path'
-        required: true
-        default: 'https://drive.google.com/drive/folders/1MGzOt7ubUh3gu7zhZIPb7R7dyRzG371j'  
-
-jobs:
+on: 
+  issues:
+    types: [opened]
+env:
+  REPO_OWNER: lokeshnasina
+jobs: 
   createRepoWithNameParam:
+    name: Create new Repository
     runs-on: ubuntu-latest
-    steps:
-      - name: create new repo      
+ 
+    steps: 
+      - name: View issue information
+        id: issue-step
+        run: |
+          echo "Issue title: ${{ github.event.issue.title }}"
+          echo "Issue Body: ${{ github.event.issue.body }}"
+      
+      - name: create new repo
         run: |
           echo ${{ secrets.GH_TOKEN }} > secret.file &&
           gh auth login --with-token < secret.file &&
           gh auth status &&
-          gh repo create ${{ github.event.inputs.repoName }} --private --template hlxsites/aem-boilerplate-commerce 
-      - name: Sleep for 10s to wait for the repo to be created
+          gh repo create ${{ github.event.issue.title }} --private --template hlxsites/aem-boilerplate-commerce
+      - name: Sleep for 10s 
         run: sleep 10s 
-      - name: clone new repo, change gDocPath and push
+      - name: clone new repo and change gDocPath
         run: |
-          mkdir -p ~/.ssh 
           ssh-keygen -t ed25519 -C "my description" -N "" -f ~/.ssh/github_rsa
-          chmod 600 ~/.ssh/github_rsa
-          chmod 600 ~/.ssh/github_rsa.pub
-          ls -l ~/.ssh  # List contents of the .ssh directory
           echo "Host github.com" > ~/.ssh/config
           echo "  IdentityFile ~/.ssh/github_rsa" >> ~/.ssh/config
           echo ${{ secrets.GH_TOKEN }} > secret.file &&
           gh auth login --with-token < secret.file &&
           gh auth status &&
-          gh repo clone lokeshnasina/${{ github.event.inputs.repoName }} &&
-          cd ${{ github.event.inputs.repoName }} &&
-          # Add deploy key
-          gh repo deploy-key add -w ~/.ssh/github_rsa.pub
-          sed -i '2s#.*#  / : ${{ github.event.inputs.gdocPath }}#g' fstab.yaml && 
+          gh repo clone $REPO_OWNER/${{ github.event.issue.title }} &&
+          cd ${{ github.event.issue.title }}
+          gh repo deploy-key add -w ~/.ssh/github_rsa.pub 
+          sed -i '2s#.*#  / : ${{ github.event.issue.body }}#g' fstab.yaml && 
           cat fstab.yaml 
           git config --global user.email "lokesh.nasina@diva-e.com"
           git config --global user.name "lokeshnasina"
-          echo "Adding remote repository..."
-          git remote set-url origin git@github.com:lokeshnasina/${{ github.event.inputs.repoName }}.git
-          echo "Starting SSH agent..."
+          git remote add origin_2 git@github.com:$REPO_OWNER/${{ github.event.issue.title }}.git  
           eval $(ssh-agent)
-          echo "Adding SSH private key to SSH agent..."
           ssh-add ~/.ssh/github_rsa
           git commit -am "use fstab!" 
-          git push         
+          git push origin_2
+      - name: close issue
+        run: |
+          echo ${{ secrets.GH_TOKEN }} > secret.file &&
+          gh auth login --with-token < secret.file
+          gh issue close ${{ github.event.issue.number }} -R $REPO_OWNER/${{ github.event.repository.name }} -c "processed automatically" -r "completed"
